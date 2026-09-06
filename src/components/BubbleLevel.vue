@@ -20,7 +20,7 @@ function degreesToOffset(degrees) {
 
 const bubbleStyle = computed(() => ({
   '--ox': props.plomada ? '0px' : `${degreesToOffset(props.x)}px`,
-  '--oy': `${degreesToOffset(props.y)}px`
+  '--oy': props.plomada ? `${degreesToOffset(props.y)}px` : '0px'
 }))
 </script>
 

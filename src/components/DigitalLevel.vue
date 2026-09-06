@@ -39,16 +39,10 @@ const okY = computed(() => Math.abs(props.y) <= props.tolerance)
     </div>
 
     <div class="readouts d-flex gap-2 w-100">
-      <div v-if="!plomada" class="card flex-fill text-center" :class="okX ? 'ok' : ''">
+      <div class="card flex-fill text-center" :class="plomada ? okY ? 'ok' : '' : okX ? 'ok' : ''">
         <div class="card-body py-2">
-          <div class="small text-secondary-emphasis">Inclinación X</div>
-          <div class="readout-value display-6 fw-semibold lh-1">{{ format(x) }}°</div>
-        </div>
-      </div>
-      <div class="card flex-fill text-center" :class="okY ? 'ok' : ''">
-        <div class="card-body py-2">
-          <div class="small text-secondary-emphasis">{{ plomada ? 'Desviación vertical' : 'Inclinación Y' }}</div>
-          <div class="readout-value display-6 fw-semibold lh-1">{{ format(plomada ? Math.abs(y) : y) }}°</div>
+          <div class="small text-secondary-emphasis">{{ plomada ? 'Desviación vertical' : 'Inclinación X' }}</div>
+          <div class="readout-value display-6 fw-semibold lh-1">{{ format(plomada ? Math.abs(y) : x) }}°</div>
         </div>
       </div>
     </div>

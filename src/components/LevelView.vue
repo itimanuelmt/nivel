@@ -26,16 +26,24 @@ const calibrated = computed(() => apply(mode.value, gravity.value))
 const isPlomada = computed(() => mode.value === 'vertical')
 
 const displayX = computed(() => isPlomada.value ? 0 : calibrated.value.x)
-const displayY = computed(() => isPlomada.value ? -calibrated.value.y : calibrated.value.y)
+const displayY = computed(() => isPlomada.value ? -calibrated.value.y : 0)
+
+const effectiveX = calibrated.value.x
+const effectiveY = calibrated.value.y
 
 const isLevel = computed(
-  () => Math.max(Math.abs(calibrated.value.x), Math.abs(calibrated.value.y)) <= tolerance.value
+  () =>
+    (isPlomada.value
+      ? Math.abs(effectiveY)
+      : Math.abs(effectiveX)) <= tolerance.value
 )
 const needsCalibration = computed(
   () =>
     status.value === 'running' &&
     offsets.value[mode.value] === null &&
-    Math.max(Math.abs(calibrated.value.x), Math.abs(calibrated.value.y)) > 2
+    (isPlomada.value
+      ? Math.abs(effectiveY)
+      : Math.abs(effectiveX)) > 2
 )
 
 watch(isLevel, (level) => vibrateOnLevelChange(level))
