@@ -10,8 +10,8 @@ const props = defineProps({
 })
 
 const MAX_DEGREES = 10
-const GRID_RADIUS = 90
-const DOT_RADIUS = 10
+const GRID_RADIUS = 86
+const DOT_RADIUS = 11
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
@@ -19,30 +19,53 @@ function degreesToOffset(degrees) {
   return clamp(degrees / MAX_DEGREES, -1, 1) * (GRID_RADIUS - DOT_RADIUS)
 }
 
-const dotStyle = computed(() => ({
-  '--ox': `${degreesToOffset(props.x)}px`,
-  '--oy': `${degreesToOffset(props.y)}px`
-}))
+const relevant = () => (props.plomada ? Math.abs(props.y) : Math.abs(props.x))
+
+const ok = computed(() => relevant() <= props.tolerance)
+
+const dotTransform = computed(() => {
+  const ox = props.plomada ? 0 : degreesToOffset(props.x)
+  const oy = props.plomada ? -degreesToOffset(props.y) : 0
+  return `translate(${ox}px, ${oy}px)`
+})
 
 const format = (value) => value.toFixed(1)
-
-const okX = computed(() => Math.abs(props.x) <= props.tolerance)
-const okY = computed(() => Math.abs(props.y) <= props.tolerance)
+const displayValue = () => (props.plomada ? Math.abs(props.y) : props.x)
+const label = () => (props.plomada ? 'Desviación vertical' : 'Inclinación X')
 </script>
 
 <template>
   <div class="digital d-flex flex-column align-items-center gap-3">
-    <div class="grid" :class="{ level }">
-      <span class="line line-x" />
-      <span class="line line-y" />
-      <span class="dot" :style="dotStyle" />
+    <div class="grid-frame" :class="{ level }">
+      <div class="grid-glass">
+        <div class="liquid" />
+        <svg class="graduations" viewBox="0 0 200 200" aria-hidden="true">
+          <circle class="g-ring" cx="100" cy="100" r="92" />
+          <circle class="g-ring g-ring-inner" cx="100" cy="100" r="40" />
+          <g class="g-ticks">
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(0 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(45 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(90 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(135 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(180 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(225 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(270 100 100)" />
+            <line x1="100" y1="8" x2="100" y2="16" transform="rotate(315 100 100)" />
+          </g>
+          <line class="g-axis g-axis-h" x1="14" y1="100" x2="186" y2="100" />
+          <line class="g-axis g-axis-v" x1="100" y1="14" x2="100" y2="186" />
+          <circle class="g-center" cx="100" cy="100" r="3" />
+        </svg>
+        <span class="dot" :style="{ transform: dotTransform }"><span class="dot-sheen" /></span>
+        <span class="glass-glint" />
+      </div>
     </div>
 
-    <div class="readouts d-flex gap-2 w-100">
-      <div class="card flex-fill text-center" :class="plomada ? okY ? 'ok' : '' : okX ? 'ok' : ''">
+    <div class="readout w-100">
+      <div class="card text-center" :class="ok ? 'ok' : ''">
         <div class="card-body py-2">
-          <div class="small text-secondary-emphasis">{{ plomada ? 'Desviación vertical' : 'Inclinación X' }}</div>
-          <div class="readout-value display-6 fw-semibold lh-1">{{ format(plomada ? Math.abs(y) : x) }}°</div>
+          <div class="small text-secondary-emphasis">{{ label() }}</div>
+          <div class="readout-value display-6 fw-semibold lh-1">{{ format(displayValue()) }}°</div>
         </div>
       </div>
     </div>
@@ -50,54 +73,140 @@ const okY = computed(() => Math.abs(props.y) <= props.tolerance)
 </template>
 
 <style scoped>
-.grid {
+.digital {
+  user-select: none;
+}
+
+.grid-frame {
   position: relative;
-  width: 200px;
-  height: 200px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  width: 236px;
+  height: 236px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(32, 201, 151, 0.08), rgba(9, 12, 14, 0.6) 72%);
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.55);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 16px;
+  background: radial-gradient(circle at 30% 25%, #3a4146 0%, #22272b 45%, #101314 100%);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.18),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.7),
+    0 14px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: box-shadow 0.3s ease;
 }
 
-.grid.level {
-  border-color: rgba(32, 201, 151, 0.8);
-  box-shadow: 0 0 28px rgba(32, 201, 151, 0.4);
+.grid-frame.level {
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.18),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.7),
+    0 14px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 38px rgba(52, 211, 153, 0.55);
 }
 
-.line {
+.grid-glass {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.2), transparent 48%);
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.5),
+    inset 0 0 5px rgba(255, 255, 255, 0.16);
+}
+
+.liquid {
   position: absolute;
-  background: rgba(255, 255, 255, 0.28);
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 32%, rgba(96, 165, 250, 0.4), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.5) 0%, rgba(16, 122, 87, 0.7) 70%, rgba(10, 82, 68, 0.8) 100%);
 }
 
-.line-x {
-  top: 50%;
-  left: 8%;
-  width: 84%;
-  height: 1px;
+.graduations {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-.line-y {
-  top: 8%;
-  left: 50%;
-  width: 1px;
-  height: 84%;
+.g-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1.3;
+}
+
+.g-ring-inner {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1.2;
+}
+
+.g-ticks line {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 2;
+}
+
+.g-ticks line:nth-child(2n) {
+  stroke-width: 2.8;
+}
+
+.g-axis {
+  stroke: rgba(255, 255, 255, 0.32);
+  stroke-width: 1;
+}
+
+.g-center {
+  fill: rgba(255, 255, 255, 0.7);
 }
 
 .dot {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 20px;
-  height: 20px;
-  margin: -10px;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
   border-radius: 50%;
-  background: radial-gradient(circle at 33% 28%, #ffffff, #cdf7e5 46%, #8ee9c5 82%);
-  box-shadow: 0 0 16px rgba(142, 233, 197, 0.55);
-  transform: translate3d(var(--ox), var(--oy), 0);
+  background: radial-gradient(circle at 34% 30%, #ffffff 0%, #d9fff0 42%, #9fe8cd 80%);
+  box-shadow:
+    inset 0 -2px 5px rgba(34, 120, 96, 0.4),
+    inset 0 3px 6px rgba(255, 255, 255, 0.9),
+    0 1px 4px rgba(0, 0, 0, 0.4),
+    0 0 18px rgba(255, 255, 255, 0.25);
   transition: transform 0.12s ease-out;
   will-change: transform;
+}
+
+.dot-sheen {
+  position: absolute;
+  top: 12%;
+  left: 18%;
+  width: 40%;
+  height: 36%;
+  border-radius: 50%;
+  background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.1));
+  transform: rotate(-18deg);
+}
+
+.grid-frame.level .dot {
+  box-shadow:
+    inset 0 -2px 5px rgba(34, 120, 96, 0.4),
+    inset 0 3px 6px rgba(255, 255, 255, 0.9),
+    0 1px 4px rgba(0, 0, 0, 0.4),
+    0 0 26px rgba(110, 231, 183, 0.9);
+}
+
+.glass-glint {
+  position: absolute;
+  top: 5%;
+  left: 8%;
+  width: 50%;
+  height: 18%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  filter: blur(1px);
+  transform: rotate(-12deg);
+  pointer-events: none;
 }
 
 .card {
