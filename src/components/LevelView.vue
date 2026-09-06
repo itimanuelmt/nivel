@@ -18,7 +18,7 @@ const mode = ref('horizontal')
 const view = ref('bubble')
 const tolerance = ref(0.5)
 
-const { isSupported, status, tilt, activate, setSimulated } = useOrientation()
+const { isSupported, status, error, tilt, activate, setSimulated } = useOrientation()
 const { apply, setZero, reset, offsets } = useCalibration()
 
 const calibrated = computed(() => apply(mode.value, tilt.value))
@@ -123,8 +123,11 @@ function onReset() {
 
     <div v-else class="d-flex flex-column align-items-center justify-content-center my-auto gap-2 text-center">
       <p v-if="status === 'idle'" class="lead mb-0">Presiona para activar el sensor de orientación</p>
-      <p v-else-if="status !== 'requesting'" class="mb-0">{{ statusText }}</p>
-      <div v-else class="spinner-border text-primary" role="status" />
+      <div v-else-if="status === 'requesting'" class="spinner-border text-primary" role="status" />
+      <template v-else>
+        <p class="mb-0 fw-semibold">{{ statusText }}</p>
+        <p v-if="error" class="small text-secondary mb-0 text-break" style="max-width: 26rem">{{ error }}</p>
+      </template>
       <button
         v-if="status === 'idle'"
         class="btn btn-primary btn-lg rounded-pill px-4"
@@ -133,6 +136,14 @@ function onReset() {
         @click="activate"
       >
         Activar sensor
+      </button>
+      <button
+        v-if="status === 'denied' || status === 'error'"
+        class="btn btn-primary btn-lg rounded-pill px-4"
+        type="button"
+        @click="activate"
+      >
+        Reintentar
       </button>
     </div>
 
