@@ -19,19 +19,21 @@ function degreesToOffset(degrees) {
   return clamp(degrees / MAX_DEGREES, -1, 1) * (GRID_RADIUS - DOT_RADIUS)
 }
 
-const relevant = () => (props.plomada ? Math.abs(props.y) : Math.abs(props.x))
+const deviation = computed(() =>
+  props.plomada ? Math.abs(props.y) : Math.hypot(props.x, props.y)
+)
 
-const ok = computed(() => relevant() <= props.tolerance)
+const ok = computed(() => deviation.value <= props.tolerance)
 
 const dotTransform = computed(() => {
   const ox = props.plomada ? 0 : degreesToOffset(props.x)
-  const oy = props.plomada ? -degreesToOffset(props.y) : 0
+  const oy = degreesToOffset(props.y)
   return `translate(${ox}px, ${oy}px)`
 })
 
 const format = (value) => value.toFixed(1)
-const displayValue = () => (props.plomada ? Math.abs(props.y) : props.x)
-const label = () => (props.plomada ? 'Desviación vertical' : 'Inclinación X')
+const displayValue = computed(() => (props.plomada ? Math.abs(props.y) : deviation.value))
+const label = computed(() => (props.plomada ? 'Desviación vertical' : 'Desviación'))
 </script>
 
 <template>
@@ -64,8 +66,8 @@ const label = () => (props.plomada ? 'Desviación vertical' : 'Inclinación X')
     <div class="readout w-100">
       <div class="card text-center" :class="ok ? 'ok' : ''">
         <div class="card-body py-2">
-          <div class="small text-secondary-emphasis">{{ label() }}</div>
-          <div class="readout-value display-6 fw-semibold lh-1">{{ format(displayValue()) }}°</div>
+          <div class="small text-secondary-emphasis">{{ label }}</div>
+          <div class="readout-value display-6 fw-semibold lh-1">{{ format(displayValue) }}°</div>
         </div>
       </div>
     </div>

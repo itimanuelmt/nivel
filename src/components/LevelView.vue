@@ -28,25 +28,21 @@ const calibrated = computed(() => apply(mode.value, gravity.value))
 
 const isPlomada = computed(() => mode.value === 'vertical')
 
-const displayX = computed(() => isPlomada.value ? 0 : calibrated.value.x)
-const displayY = computed(() => isPlomada.value ? -calibrated.value.y : 0)
+const bubbleX = computed(() => isPlomada.value ? 0 : -calibrated.value.y)
+const bubbleY = computed(() => (isPlomada.value ? -calibrated.value.y : calibrated.value.x))
 
-const effectiveX = calibrated.value.x
-const effectiveY = calibrated.value.y
-
-const isLevel = computed(
-  () =>
-    (isPlomada.value
-      ? Math.abs(effectiveY)
-      : Math.abs(effectiveX)) <= tolerance.value
+const deviation = computed(() =>
+  isPlomada.value
+    ? Math.abs(calibrated.value.y)
+    : Math.hypot(calibrated.value.x, calibrated.value.y)
 )
+
+const isLevel = computed(() => deviation.value <= tolerance.value)
 const needsCalibration = computed(
   () =>
     status.value === 'running' &&
     offsets.value[mode.value] === null &&
-    (isPlomada.value
-      ? Math.abs(effectiveY)
-      : Math.abs(effectiveX)) > 2
+    deviation.value > 2
 )
 
 watch(isLevel, (level) => vibrateOnLevelChange(level))
@@ -135,15 +131,15 @@ function onReset() {
     <div v-if="status === 'running'" class="d-flex justify-content-center my-4">
       <BubbleLevel
         v-if="view === 'bubble'"
-        :x="displayX"
-        :y="displayY"
+        :x="bubbleX"
+        :y="bubbleY"
         :level="isLevel"
         :plomada="isPlomada"
       />
       <DigitalLevel
         v-else
-        :x="displayX"
-        :y="displayY"
+        :x="bubbleX"
+        :y="bubbleY"
         :tolerance="tolerance"
         :level="isLevel"
         :plomada="isPlomada"

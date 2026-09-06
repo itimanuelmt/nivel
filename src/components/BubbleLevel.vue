@@ -21,7 +21,7 @@ function degreesToOffset(degrees) {
 
 const bubbleTransform = computed(() => {
   const ox = props.plomada ? 0 : degreesToOffset(props.x)
-  const oy = props.plomada ? degreesToOffset(props.y) : 0
+  const oy = degreesToOffset(props.y)
   return `translate(${ox}px, ${oy}px)`
 })
 </script>
