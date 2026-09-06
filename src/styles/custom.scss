@@ -14,3 +14,8 @@ body {
   background: radial-gradient(1200px 800px at 50% -10%, #1c2c33 0%, $body-bg 60%);
   -webkit-tap-highlight-color: transparent;
 }
+
+.level-view {
+  max-width: 420px;
+  margin-inline: auto;
+}

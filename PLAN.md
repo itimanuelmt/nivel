@@ -83,6 +83,6 @@ nivel_burbuja/
 - [x] 1. Scaffold Vite + Vue 3 + Bootstrap (Sass) en `C:\laragon\www\nivel_burbuja`.
 - [x] 2. `geometry.js` + `useOrientation` (con permiso iOS).
 - [x] 3. `useCalibration` + `haptics.js`.
-- [ ] 4. Componentes UI (modo, vista, tolerancia, calibración, simulador).
+- [x] 4. Componentes UI (modo, vista, tolerancia, calibración, simulador).
 - [x] 5. Config PWA + iconos placeholder.
 - [ ] 6. Build, preview y scripts de prueba por túnel HTTPS.

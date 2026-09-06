@@ -1,0 +1,146 @@
+<script setup>
+import { computed, ref, watch } from 'vue'
+import { defineAsyncComponent } from 'vue'
+import { useOrientation } from '../composables/useOrientation.js'
+import { useCalibration } from '../composables/useCalibration.js'
+import { vibrateOnLevelChange } from '../services/haptics.js'
+import BubbleLevel from './BubbleLevel.vue'
+import DigitalLevel from './DigitalLevel.vue'
+import ToleranceControl from './ToleranceControl.vue'
+import CalibrationControl from './CalibrationControl.vue'
+
+const useSimulator = import.meta.env.DEV
+const DevSimulator = useSimulator
+  ? defineAsyncComponent(() => import('./DevSimulator.vue'))
+  : null
+
+const mode = ref('horizontal')
+const view = ref('bubble')
+const tolerance = ref(0.5)
+
+const { isSupported, status, tilt, activate, setSimulated } = useOrientation()
+const { apply, setZero, reset, offsets } = useCalibration()
+
+const calibrated = computed(() => apply(mode.value, tilt.value))
+const isLevel = computed(
+  () => Math.max(Math.abs(calibrated.value.x), Math.abs(calibrated.value.y)) <= tolerance.value
+)
+
+watch(isLevel, (level) => vibrateOnLevelChange(level))
+
+const statusText = computed(
+  () =>
+    ({
+      idle: 'Sensor inactivo',
+      requesting: 'Solicitando permiso…',
+      running: 'Sensor activo',
+      denied: 'Permiso denegado',
+      unsupported: 'Sensor no disponible'
+    })[status.value]
+)
+
+const statusBadgeClass = computed(
+  () =>
+    ({
+      idle: 'text-bg-secondary',
+      requesting: 'text-bg-info',
+      running: 'text-bg-success',
+      denied: 'text-bg-danger',
+      unsupported: 'text-bg-warning'
+    })[status.value]
+)
+
+function onSetZero() {
+  setZero(mode.value, tilt.value)
+}
+
+function onReset() {
+  reset(mode.value)
+}
+</script>
+
+<template>
+  <div class="level-view container py-3 d-flex flex-column" style="min-height: 100dvh">
+    <header class="d-flex align-items-center justify-content-between mb-3">
+      <h1 class="h4 mb-0">Nivel de Burbuja</h1>
+      <span class="badge" :class="statusBadgeClass">{{ statusText }}</span>
+    </header>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <div class="btn-group btn-group-sm" role="group" aria-label="Modo de medida">
+        <button
+          class="btn"
+          :class="mode === 'horizontal' ? 'btn-primary' : 'btn-outline-primary'"
+          type="button"
+          @click="mode = 'horizontal'"
+        >
+          Horizontal
+        </button>
+        <button
+          class="btn"
+          :class="mode === 'vertical' ? 'btn-primary' : 'btn-outline-primary'"
+          type="button"
+          @click="mode = 'vertical'"
+        >
+          Plomada
+        </button>
+      </div>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Vista">
+        <button
+          class="btn"
+          :class="view === 'bubble' ? 'btn-primary' : 'btn-outline-primary'"
+          type="button"
+          @click="view = 'bubble'"
+        >
+          Burbuja
+        </button>
+        <button
+          class="btn"
+          :class="view === 'digital' ? 'btn-primary' : 'btn-outline-primary'"
+          type="button"
+          @click="view = 'digital'"
+        >
+          Digital
+        </button>
+      </div>
+    </div>
+
+    <div v-if="status === 'running'" class="d-flex justify-content-center my-4">
+      <BubbleLevel
+        v-if="view === 'bubble'"
+        :x="calibrated.x"
+        :y="calibrated.y"
+        :level="isLevel"
+      />
+      <DigitalLevel
+        v-else
+        :x="calibrated.x"
+        :y="calibrated.y"
+        :tolerance="tolerance"
+        :level="isLevel"
+      />
+    </div>
+
+    <div v-else class="d-flex flex-column align-items-center justify-content-center my-auto gap-2 text-center">
+      <p v-if="status === 'idle'" class="lead mb-0">Presiona para activar el sensor de orientación</p>
+      <p v-else-if="status !== 'requesting'" class="mb-0">{{ statusText }}</p>
+      <div v-else class="spinner-border text-primary" role="status" />
+      <button
+        v-if="status === 'idle'"
+        class="btn btn-primary btn-lg rounded-pill px-4"
+        type="button"
+        :disabled="!isSupported"
+        @click="activate"
+      >
+        Activar sensor
+      </button>
+    </div>
+
+    <div v-if="status === 'running'" class="d-flex flex-column gap-3 mt-auto pt-3">
+      <ToleranceControl v-model="tolerance" />
+      <CalibrationControl :mode="mode" :offsets="offsets" :enabled="true" @zero="onSetZero" @reset="onReset" />
+    </div>
+
+    <DevSimulator v-if="useSimulator && DevSimulator" class="mt-4" :simulate="setSimulated" />
+  </div>
+</template>

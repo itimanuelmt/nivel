@@ -47,8 +47,8 @@ export function useOrientation() {
 
   onBeforeUnmount(stop)
 
-  function setSimulated(value) {
-    tilt.value = value
+  function setSimulated(euler) {
+    tilt.value = computeTilt(euler.alpha ?? 0, euler.beta ?? 0, euler.gamma ?? 0)
   }
 
   return {
