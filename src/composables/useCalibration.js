@@ -47,7 +47,7 @@ export function useCalibration() {
 
   function apply(mode, gravity) {
     const reference = offsets.value[mode]
-    const corrected = reference ? alignToFlat(gravity, reference) : gravity
+    const corrected = reference ? alignToFlat(gravity, reference, mode) : gravity
     return axisValues(mode, computeTiltFromGravity(corrected))
   }
 

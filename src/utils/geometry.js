@@ -25,8 +25,8 @@ export function computeTiltFromGravity(gravity) {
   return {
     tiltX: Math.atan2(gravity.y, -gravity.z) * RAD_TO_DEG,
     tiltY: Math.atan2(gravity.x, -gravity.z) * RAD_TO_DEG,
-    plumbX: Math.atan2(gravity.x, -gravity.y) * RAD_TO_DEG,
-    plumbY: Math.atan2(gravity.z, -gravity.y) * RAD_TO_DEG
+    plumbX: Math.atan2(gravity.x, gravity.y) * RAD_TO_DEG,
+    plumbY: Math.atan2(gravity.z, gravity.y) * RAD_TO_DEG
   }
 }
 
@@ -85,7 +85,11 @@ function rotateVector(vector, quaternion) {
   }
 }
 
-export function alignToFlat(gravity, reference) {
-  const rotation = rotationBetween(reference, { x: 0, y: 0, z: -1 })
+const VERTICAL_GRAVITY = { x: 0, y: 1, z: 0 }
+const HORIZONTAL_GRAVITY = { x: 0, y: 0, z: -1 }
+
+export function alignToFlat(gravity, reference, mode = 'horizontal') {
+  const target = mode === 'vertical' ? VERTICAL_GRAVITY : HORIZONTAL_GRAVITY
+  const rotation = rotationBetween(reference, target)
   return rotateVector(gravity, rotation)
 }
