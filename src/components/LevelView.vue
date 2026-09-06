@@ -22,6 +22,12 @@ const { isSupported, status, error, gravity, activate, setSimulated } = useOrien
 const { apply, setZero, reset, offsets } = useCalibration()
 
 const calibrated = computed(() => apply(mode.value, gravity.value))
+
+const isPlomada = computed(() => mode.value === 'vertical')
+
+const displayX = computed(() => isPlomada.value ? 0 : calibrated.value.x)
+const displayY = computed(() => isPlomada.value ? -calibrated.value.y : calibrated.value.y)
+
 const isLevel = computed(
   () => Math.max(Math.abs(calibrated.value.x), Math.abs(calibrated.value.y)) <= tolerance.value
 )
@@ -118,16 +124,18 @@ function onReset() {
     <div v-if="status === 'running'" class="d-flex justify-content-center my-4">
       <BubbleLevel
         v-if="view === 'bubble'"
-        :x="calibrated.x"
-        :y="calibrated.y"
+        :x="displayX"
+        :y="displayY"
         :level="isLevel"
+        :plomada="isPlomada"
       />
       <DigitalLevel
         v-else
-        :x="calibrated.x"
-        :y="calibrated.y"
+        :x="displayX"
+        :y="displayY"
         :tolerance="tolerance"
         :level="isLevel"
+        :plomada="isPlomada"
       />
     </div>
 

@@ -4,7 +4,8 @@ import { computed } from 'vue'
 const props = defineProps({
   x: { type: Number, default: 0 },
   y: { type: Number, default: 0 },
-  level: { type: Boolean, default: false }
+  level: { type: Boolean, default: false },
+  plomada: { type: Boolean, default: false }
 })
 
 const MAX_DEGREES = 10
@@ -18,7 +19,7 @@ function degreesToOffset(degrees) {
 }
 
 const bubbleStyle = computed(() => ({
-  '--ox': `${degreesToOffset(props.x)}px`,
+  '--ox': props.plomada ? '0px' : `${degreesToOffset(props.x)}px`,
   '--oy': `${degreesToOffset(props.y)}px`
 }))
 </script>
