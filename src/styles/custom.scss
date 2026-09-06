@@ -1,0 +1,16 @@
+$enable-shadows: true;
+
+// Tema base
+$dark: #141619;
+$primary: #20c997;
+$secondary: #6c757d;
+$body-bg: $dark;
+$body-color: #e9ecef;
+
+@import 'bootstrap/scss/bootstrap';
+
+body {
+  min-height: 100dvh;
+  background: radial-gradient(1200px 800px at 50% -10%, #1c2c33 0%, $body-bg 60%);
+  -webkit-tap-highlight-color: transparent;
+}
