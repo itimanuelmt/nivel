@@ -64,6 +64,17 @@ nivel_burbuja/
 │     └─ DevSimulator.vue
 ```
 
+## Fase de rediseño — skill `frontend-design` (importada de `afinador`)
+
+- **Dirección estética**: "Instrumento de precisión" (nivel mecánico / instrumental). La app ya es un instrumento físico; la UI lo refuerza.
+- **DFII**: Impacto 4 · Ajuste 5 · Viabilidad 5 · Rendimiento 4 · Riesgo 2 → **16** (clamp a 15).
+- **Ancla memorable**: anillo graduado esculpido (ticks) alrededor de la burbuja + lecturas numéricas en monoespaciada (sensación de instrumento calibrado).
+- **Tipografía**: `Space Grotesk` (display + cuerpo) y `JetBrains Mono` (valores numéricos, tabular). Se instala vía `@fontsource` (subsets latin) para que queden precacheadas offline.
+- **Color**: fondo verde-negro (#0a120f), acento menta #34d399 con tinta oscura #052e20 (contraste 8.9:1), neutros de texto #f4fbf8 / #cdddd6 / #9baea7 (≥7:1 sobre fondo).
+- **Contraste obligatorio (WCAG AA)**: textos normales ≥ 4.5:1, textos grandes/UI ≥ 3:1. Se corrigen los actuales: `text-secondary-emphasis` (redefinido vía `--bs-secondary-text-emphasis`), `text-secondary` (vía `--bs-secondary-color`), `btn-primary` blanco-sobre-teal (tinta oscura sobre acento), `text-bg-secondary` (reemplazado por `.chip`).
+- **Movimiento**: una sola entrada (fade-up del contenedor) + glow al nivelar (ya existente). Sin micro-animaciones decorativas.
+- **Archivos afectados**: `package.json`, `src/main.js`, `src/styles/custom.scss`, `index.html`, `LevelView.vue`, `BubbleLevel.vue`, `DigitalLevel.vue`, `ToleranceControl.vue`.
+
 ## Bootstrap y PWA
 - Bootstrap 5.3 vía Sass oficial (`bootstrap/scss` con variables sobreescritas antes del import) + `bootstrap.bundle.min.js`.
 - PWA: `vite-plugin-pwa`, `registerType: 'autoUpdate'`, manifest con `lang: 'es'`, `display: 'standalone'`, theme color, cache offline total.
@@ -86,3 +97,4 @@ nivel_burbuja/
 - [x] 4. Componentes UI (modo, vista, tolerancia, calibración, simulador).
 - [x] 5. Config PWA + iconos placeholder.
 - [ ] 6. Build, preview y scripts de prueba por túnel HTTPS.
+- [ ] 7. Rediseño con skill `frontend-design`: sistema de tokens, tipografía y contraste AA.

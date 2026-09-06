@@ -41,13 +41,13 @@ const okY = computed(() => Math.abs(props.y) <= props.tolerance)
       <div class="card flex-fill text-center" :class="okX ? 'ok' : ''">
         <div class="card-body py-2">
           <div class="small text-secondary-emphasis">Inclinación X</div>
-          <div class="display-6 fw-semibold lh-1">{{ format(x) }}°</div>
+          <div class="readout-value display-6 fw-semibold lh-1">{{ format(x) }}°</div>
         </div>
       </div>
       <div class="card flex-fill text-center" :class="okY ? 'ok' : ''">
         <div class="card-body py-2">
           <div class="small text-secondary-emphasis">Inclinación Y</div>
-          <div class="display-6 fw-semibold lh-1">{{ format(y) }}°</div>
+          <div class="readout-value display-6 fw-semibold lh-1">{{ format(y) }}°</div>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@ const okY = computed(() => Math.abs(props.y) <= props.tolerance)
 
 .line {
   position: absolute;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .line-x {
@@ -106,20 +106,26 @@ const okY = computed(() => Math.abs(props.y) <= props.tolerance)
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--app-surface);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
-.card .display-6 {
+.readout-value {
+  font-family: var(--app-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.card .readout-value {
   color: #f8f9fa;
 }
 
 .card.ok {
-  border-color: rgba(32, 201, 151, 0.7);
-  background: rgba(32, 201, 151, 0.12);
+  border-color: rgba(52, 211, 153, 0.7);
+  background: rgba(52, 211, 153, 0.12);
 }
 
-.card.ok .display-6 {
-  color: #8ee9c5;
+.card.ok .readout-value {
+  color: var(--app-accent);
 }
 </style>

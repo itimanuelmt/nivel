@@ -14,7 +14,7 @@ const label = computed(() => props.modelValue.toFixed(1))
   <div class="tolerance-control">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <label class="small text-secondary-emphasis mb-0" for="tolerance-range">Tolerancia</label>
-      <span class="badge text-bg-secondary">{{ label }}°</span>
+      <span class="chip">{{ label }}°</span>
     </div>
     <input
       id="tolerance-range"

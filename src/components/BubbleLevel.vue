@@ -24,13 +24,14 @@ const bubbleStyle = computed(() => ({
 </script>
 
 <template>
-  <div class="vial d-flex align-items-center justify-content-center" :class="{ level }">
-    <div class="ring" />
-    <div class="axis axis-x" />
-    <div class="axis axis-y" />
-    <div class="markers" />
-    <div class="bubble" :style="bubbleStyle" />
-  </div>
+<div class="vial d-flex align-items-center justify-content-center" :class="{ level }">
+      <div class="ticks" />
+      <div class="ring" />
+      <div class="axis axis-x" />
+      <div class="axis axis-y" />
+      <div class="markers" />
+      <div class="bubble" :style="bubbleStyle" />
+    </div>
 </template>
 
 <style scoped>
@@ -52,16 +53,30 @@ const bubbleStyle = computed(() => ({
   box-shadow: inset 0 0 44px rgba(0, 0, 0, 0.6), 0 0 34px rgba(32, 201, 151, 0.45);
 }
 
+.ticks {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.2) 0deg 0.5deg,
+    transparent 0.5deg 30deg
+  );
+  -webkit-mask: radial-gradient(closest-side, transparent 94.5%, #000 95.5%);
+  mask: radial-gradient(closest-side, transparent 94.5%, #000 95.5%);
+  pointer-events: none;
+}
+
 .ring {
   position: absolute;
   inset: 21%;
-  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
   border-radius: 50%;
 }
 
 .axis {
   position: absolute;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.26);
 }
 
 .axis-x {
@@ -85,7 +100,7 @@ const bubbleStyle = computed(() => ({
   height: 8px;
   margin: -4px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 1);
 }
 
 .bubble {

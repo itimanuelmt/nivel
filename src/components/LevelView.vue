@@ -39,14 +39,15 @@ const statusText = computed(
     })[status.value]
 )
 
-const statusBadgeClass = computed(
+const statusPillClass = computed(
   () =>
     ({
-      idle: 'text-bg-secondary',
-      requesting: 'text-bg-info',
-      running: 'text-bg-success',
-      denied: 'text-bg-danger',
-      unsupported: 'text-bg-warning'
+      idle: 'status-pill muted',
+      requesting: 'status-pill muted requesting',
+      running: 'status-pill ok',
+      denied: 'status-pill danger',
+      error: 'status-pill danger',
+      unsupported: 'status-pill warn'
     })[status.value]
 )
 
@@ -62,8 +63,11 @@ function onReset() {
 <template>
   <div class="level-view container py-3 d-flex flex-column" style="min-height: 100dvh">
     <header class="d-flex align-items-center justify-content-between mb-3">
-      <h1 class="h4 mb-0">Nivel de Burbuja</h1>
-      <span class="badge" :class="statusBadgeClass">{{ statusText }}</span>
+      <h1 class="app-title mb-0">Nivel de Burbuja</h1>
+      <span class="status-pill" :class="statusPillClass">
+        <span class="status-dot" />
+        {{ statusText }}
+      </span>
     </header>
 
     <div class="d-flex flex-wrap gap-2 mb-3">
