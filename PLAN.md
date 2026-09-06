@@ -97,4 +97,4 @@ nivel_burbuja/
 - [x] 4. Componentes UI (modo, vista, tolerancia, calibración, simulador).
 - [x] 5. Config PWA + iconos placeholder.
 - [ ] 6. Build, preview y scripts de prueba por túnel HTTPS.
-- [ ] 7. Rediseño con skill `frontend-design`: sistema de tokens, tipografía y contraste AA.
+- [x] 7. Rediseño con skill `frontend-design`: sistema de tokens, tipografía y contraste AA.
