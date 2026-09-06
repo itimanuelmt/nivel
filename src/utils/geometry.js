@@ -6,18 +6,17 @@ function degToRad(degrees) {
 }
 
 export function gravityInDevice(alpha, beta, gamma) {
-  const a = degToRad(alpha)
-  const b = degToRad(beta)
-  const g = degToRad(gamma)
-  const cosA = Math.cos(a)
-  const sinA = Math.sin(a)
-  const cosB = Math.cos(b)
+  // Ignoramos alpha porque la brújula no debe afectar la inclinación local del nivel de burbuja.
+  const b = degToRad(beta ?? 0)
+  const g = degToRad(gamma ?? 0)
   const sinB = Math.sin(b)
-  const cosG = Math.cos(g)
+  const cosB = Math.cos(b)
   const sinG = Math.sin(g)
+  const cosG = Math.cos(g)
+
   return {
-    x: -(cosA * sinG + sinA * sinB * cosG),
-    y: -(sinA * sinG - cosA * sinB * cosG),
+    x: -sinG,
+    y: sinB * cosG,
     z: -cosB * cosG
   }
 }

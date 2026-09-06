@@ -98,5 +98,6 @@ nivel_burbuja/
 - [x] 3. `useCalibration` + `haptics.js`.
 - [x] 4. Componentes UI (modo, vista, tolerancia, calibración, simulador).
 - [x] 5. Config PWA + iconos placeholder.
-- [ ] 6. Build, preview y scripts de prueba por túnel HTTPS.
+- [x] 6. Build, preview y scripts de prueba por túnel HTTPS.
+- [ ] 8. Redefinición y optimización del motor de sensores (`geometry.js` independiente de `alpha` para comportamiento físico puro de nivel de burbuja).
 - [x] 7. Rediseño con skill `frontend-design`: sistema de tokens, tipografía y contraste AA.

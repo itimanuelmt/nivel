@@ -29,11 +29,19 @@ export function useOrientation() {
   const isSupported = 'DeviceOrientationEvent' in window
 
   let handler = null
+  let lastGravity = { x: 0, y: 0, z: -1 }
+  const SMOOTHING = 0.35 // Factor de suavizado para evitar vibración excesiva (jitter)
 
   function onDeviceOrientation(event) {
-    if (event.alpha === null) return
-    gravity.value = gravityInDevice(event.alpha, event.beta, event.gamma)
-    tilt.value = computeTilt(event.alpha, event.beta, event.gamma)
+    if (event.beta === null || event.gamma === null) return
+    const rawGravity = gravityInDevice(event.alpha, event.beta, event.gamma)
+    
+    lastGravity = {
+      x: lastGravity.x + SMOOTHING * (rawGravity.x - lastGravity.x),
+      y: lastGravity.y + SMOOTHING * (rawGravity.y - lastGravity.y),
+      z: lastGravity.z + SMOOTHING * (rawGravity.z - lastGravity.z)
+    }
+    gravity.value = { ...lastGravity }
   }
 
   function stop() {
@@ -87,8 +95,9 @@ export function useOrientation() {
     const alpha = euler.alpha ?? 0
     const beta = euler.beta ?? 0
     const gamma = euler.gamma ?? 0
-    gravity.value = gravityInDevice(alpha, beta, gamma)
-    tilt.value = computeTilt(alpha, beta, gamma)
+    const rawGravity = gravityInDevice(alpha, beta, gamma)
+    lastGravity = rawGravity
+    gravity.value = { ...rawGravity }
   }
 
   return {
