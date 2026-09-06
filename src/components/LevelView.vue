@@ -8,6 +8,9 @@ import BubbleLevel from './BubbleLevel.vue'
 import DigitalLevel from './DigitalLevel.vue'
 import ToleranceControl from './ToleranceControl.vue'
 import CalibrationControl from './CalibrationControl.vue'
+import pkg from '../../package.json'
+
+const appVersion = pkg.version
 
 const useSimulator = import.meta.env.DEV
 const DevSimulator = useSimulator
@@ -182,5 +185,9 @@ function onReset() {
     </div>
 
     <DevSimulator v-if="useSimulator && DevSimulator" class="mt-4" :simulate="setSimulated" />
+
+    <footer class="version-footer text-center pt-3">
+      <span class="chip">v{{ appVersion }}</span>
+    </footer>
   </div>
 </template>
