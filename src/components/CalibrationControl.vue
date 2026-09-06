@@ -9,15 +9,14 @@ const props = defineProps({
 
 const emit = defineEmits(['zero', 'reset'])
 
-const current = computed(() => props.offsets[props.mode] ?? { x: 0, y: 0 })
-const isCalibrated = computed(() => current.value.x !== 0 || current.value.y !== 0)
-const label = computed(() => `X ${current.value.x.toFixed(1)}° · Y ${current.value.y.toFixed(1)}°`)
+const current = computed(() => props.offsets[props.mode] ?? null)
+const isCalibrated = computed(() => current.value !== null)
 </script>
 
 <template>
   <div class="calibration-control d-flex align-items-center justify-content-between gap-2">
     <span class="small text-secondary-emphasis">
-      <template v-if="isCalibrated">Calibrado · {{ label }}</template>
+      <template v-if="isCalibrated">Calibrado</template>
       <template v-else>Sin calibrar</template>
     </span>
     <div class="btn-group btn-group-sm">

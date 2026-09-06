@@ -1,5 +1,5 @@
 import { onBeforeUnmount, readonly, ref } from 'vue'
-import { computeTilt } from '../utils/geometry.js'
+import { computeTilt, gravityInDevice } from '../utils/geometry.js'
 
 function detectPlatform() {
   const userAgent = navigator.userAgent
@@ -23,6 +23,7 @@ function settingsHint() {
 
 export function useOrientation() {
   const tilt = ref({ tiltX: 0, tiltY: 0, plumbX: 0, plumbY: 0 })
+  const gravity = ref({ x: 0, y: 0, z: -1 })
   const status = ref('idle')
   const error = ref('')
   const isSupported = 'DeviceOrientationEvent' in window
@@ -31,6 +32,7 @@ export function useOrientation() {
 
   function onDeviceOrientation(event) {
     if (event.alpha === null) return
+    gravity.value = gravityInDevice(event.alpha, event.beta, event.gamma)
     tilt.value = computeTilt(event.alpha, event.beta, event.gamma)
   }
 
@@ -82,7 +84,11 @@ export function useOrientation() {
   onBeforeUnmount(stop)
 
   function setSimulated(euler) {
-    tilt.value = computeTilt(euler.alpha ?? 0, euler.beta ?? 0, euler.gamma ?? 0)
+    const alpha = euler.alpha ?? 0
+    const beta = euler.beta ?? 0
+    const gamma = euler.gamma ?? 0
+    gravity.value = gravityInDevice(alpha, beta, gamma)
+    tilt.value = computeTilt(alpha, beta, gamma)
   }
 
   return {
@@ -90,6 +96,7 @@ export function useOrientation() {
     status,
     error: readonly(error),
     tilt: readonly(tilt),
+    gravity: readonly(gravity),
     activate,
     setSimulated
   }

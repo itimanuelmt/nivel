@@ -1,7 +1,14 @@
 import { readonly, ref } from 'vue'
+import { alignToFlat, computeTiltFromGravity } from '../utils/geometry.js'
 
 const STORAGE_KEY = 'nivel-burbuja:calibration'
-const EMPTY = () => ({ horizontal: { x: 0, y: 0 }, vertical: { x: 0, y: 0 } })
+const EMPTY = () => ({ horizontal: null, vertical: null })
+
+function asReference(entry) {
+  const hasVector =
+    entry && Number.isFinite(entry.x) && Number.isFinite(entry.y) && Number.isFinite(entry.z)
+  return hasVector ? { x: entry.x, y: entry.y, z: entry.z } : null
+}
 
 function loadOffsets() {
   try {
@@ -9,8 +16,8 @@ function loadOffsets() {
     if (!raw) return EMPTY()
     const parsed = JSON.parse(raw)
     return {
-      horizontal: parsed.horizontal ?? { x: 0, y: 0 },
-      vertical: parsed.vertical ?? { x: 0, y: 0 }
+      horizontal: asReference(parsed.horizontal),
+      vertical: asReference(parsed.vertical)
     }
   } catch {
     return EMPTY()
@@ -28,20 +35,20 @@ export function useCalibration() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(offsets.value))
   }
 
-  function setZero(mode, tilt) {
-    offsets.value[mode] = axisValues(mode, tilt)
+  function setZero(mode, gravity) {
+    offsets.value[mode] = { x: gravity.x, y: gravity.y, z: gravity.z }
     persist()
   }
 
   function reset(mode) {
-    offsets.value[mode] = { x: 0, y: 0 }
+    offsets.value[mode] = null
     persist()
   }
 
-  function apply(mode, tilt) {
-    const current = axisValues(mode, tilt)
-    const offset = offsets.value[mode]
-    return { x: current.x - offset.x, y: current.y - offset.y }
+  function apply(mode, gravity) {
+    const reference = offsets.value[mode]
+    const corrected = reference ? alignToFlat(gravity, reference) : gravity
+    return axisValues(mode, computeTiltFromGravity(corrected))
   }
 
   return {

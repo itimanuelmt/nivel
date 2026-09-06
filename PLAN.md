@@ -21,8 +21,10 @@
 - En modo plomada se mide la inclinación respecto al eje Y (gravedad alineada con "arriba"); el mismo sensor alimenta ambos modos.
 
 ### Calibración (`src/composables/useCalibration.js`)
-- Offset X/Y persistido en `localStorage`.
-- Botones "Poner a cero" y "Restablecer".
+- Referencia en 3D: "Poner a cero" captura el **vector de gravedad crudo** (no solo la resta en grados) y lo alinea al eje −Z del dispositivo (`quaternionBetween` → `alignToFlat`).
+- Corrige de forma exacta el desajuste de marco de referencia que reportan algunos navegadores/celulares (ej. teléfono plano → 85°/81° en vez de 0°), no aproximado.
+- Persistido en `localStorage` (formato: vector gravedad por modo; el formato viejo de offsets en grados se descarta con seguridad).
+- Botones "Poner a cero" y "Restablecer"; aviso "Poner a cero" cuando corre sin calibrar y la desviación es grande.
 
 ### Háptica (`src/services/haptics.js`)
 - `navigator.vibrate([60, 40, 60])` cuando `|tilt| <= tolerancia`, con umbral anti-repetición.

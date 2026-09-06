@@ -18,12 +18,18 @@ const mode = ref('horizontal')
 const view = ref('bubble')
 const tolerance = ref(0.5)
 
-const { isSupported, status, error, tilt, activate, setSimulated } = useOrientation()
+const { isSupported, status, error, gravity, activate, setSimulated } = useOrientation()
 const { apply, setZero, reset, offsets } = useCalibration()
 
-const calibrated = computed(() => apply(mode.value, tilt.value))
+const calibrated = computed(() => apply(mode.value, gravity.value))
 const isLevel = computed(
   () => Math.max(Math.abs(calibrated.value.x), Math.abs(calibrated.value.y)) <= tolerance.value
+)
+const needsCalibration = computed(
+  () =>
+    status.value === 'running' &&
+    offsets.value[mode.value] === null &&
+    Math.max(Math.abs(calibrated.value.x), Math.abs(calibrated.value.y)) > 2
 )
 
 watch(isLevel, (level) => vibrateOnLevelChange(level))
@@ -52,7 +58,7 @@ const statusPillClass = computed(
 )
 
 function onSetZero() {
-  setZero(mode.value, tilt.value)
+  setZero(mode.value, gravity.value)
 }
 
 function onReset() {
@@ -152,6 +158,9 @@ function onReset() {
     </div>
 
     <div v-if="status === 'running'" class="d-flex flex-column gap-3 mt-auto pt-3">
+      <p v-if="needsCalibration" class="small text-secondary mb-0">
+        ¿Burbuja descentrada? Apoyá el teléfono sobre la superficie y tocá «Poner a cero» para calibrar.
+      </p>
       <ToleranceControl v-model="tolerance" />
       <CalibrationControl :mode="mode" :offsets="offsets" :enabled="true" @zero="onSetZero" @reset="onReset" />
     </div>
